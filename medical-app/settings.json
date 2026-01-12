@@ -1,0 +1,9 @@
+{
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "vue"
+  ],
+  "vue.inlayHints.missingProps": false,
+  "files.associations": {
+    "*.vue": "vue"
+  }
+}

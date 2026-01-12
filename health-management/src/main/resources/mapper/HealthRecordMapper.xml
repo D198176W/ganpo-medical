@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.healthmanagement.mapper.HealthRecordMapper">
+
+    <select id="selectPageByUserId" resultType="com.atguigu.healthmanagement.entity.HealthRecord">
+        SELECT * FROM health_records
+        WHERE user_id = #{userId}
+        ORDER BY record_date DESC
+    </select>
+    <select id="selectLatestRecord" resultType="com.atguigu.healthmanagement.entity.HealthRecord"></select>
+    <select id="getAverageSleepScore" resultType="java.lang.Object"></select>
+    <select id="countRecordsInPeriod" resultType="java.lang.Object"></select>
+    <select id="countContinuousRecordDays" resultType="java.lang.Integer"></select>
+    <select id="countExerciseDays" resultType="java.lang.Object"></select>
+    <select id="selectByUserIdAndDateRange" resultType="com.atguigu.healthmanagement.entity.HealthRecord"></select>
+
+</mapper>

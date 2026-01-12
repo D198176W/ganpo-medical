@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.atguigu</groupId>
+  <artifactId>ganpo-medical</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <!--  <packaging>jar</packaging>-->
+  <packaging>pom</packaging>
+
+  <name>ganpo-medical</name>
+  <url>http://maven.apache.org</url>
+
+
+  <modules>
+    <module>consult</module>
+    <module>health-management</module>
+    <module>pathology</module>
+    <module>medical-resource</module>
+
+  </modules>
+
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <spring-boot.version>3.2.4</spring-boot.version>
+    <mybatis-plus.version>3.5.7</mybatis-plus.version>
+    <java.version>17</java.version>
+  </properties>
+
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!--    <dependency>-->
+      <!--      <groupId>junit</groupId>-->
+      <!--      <artifactId>junit</artifactId>-->
+      <!--      <version>3.8.1</version>-->
+      <!--      <scope>test</scope>-->
+      <!--    </dependency>-->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- 公共依赖管理 -->
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>${mybatis-plus.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>5.0.0</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.2.6</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+    </dependencies>
+
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Spring Boot Maven Plugin 正确配置 -->
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>3.2.4</version>  <!-- 使用属性中定义的版本 -->
+          <configuration>
+            <excludes>
+              <exclude>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+              </exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+
+
+</project>

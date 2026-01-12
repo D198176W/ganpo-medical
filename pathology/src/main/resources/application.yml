@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: pathology
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:mysql://192.168.88.132:3306/pathology?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: 192.168.88.132
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+app:
+  jwt:
+    secret: verySecretKeyChangeMe1234567890123456
+    expireSeconds: 86400
+  storage:
+    upload-dir: ./uploads
+

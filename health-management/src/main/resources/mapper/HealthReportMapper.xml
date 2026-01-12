@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.healthmanagement.mapper.HealthReportMapper">
+
+    <!-- 复杂查询示例 -->
+    <select id="selectComplexReport" resultType="com.atguigu.healthmanagement.entity.HealthReport">
+        SELECT hr.*, u.real_name as user_name
+        FROM health_reports hr
+                 LEFT JOIN users u ON hr.user_id = u.id
+        WHERE hr.user_id = #{userId}
+          AND hr.overall_score >= #{minScore}
+        ORDER BY hr.generated_at DESC
+    </select>
+
+</mapper>
