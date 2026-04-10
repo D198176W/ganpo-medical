@@ -17,7 +17,7 @@ import reactor.core.publisher.Flux;
 //@AiService(wiringMode = WiringMode.EXPLICIT, chatMemoryProvider = "chatMemoryProviderXiaozhi")
 public interface XiaozhiAgent {
 
-    @SystemMessage(fromResource = "ganpo-prompt-template.txt")
+    @SystemMessage(fromResource = "ganpo-prompt-template1.txt")
   Flux <String> chat(@MemoryId Long memory, @UserMessage String usermessage);
 
 }

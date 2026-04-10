@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Tag(name="硅谷小智")
+@Tag(name="赣鄱医枢")
+
 @RestController
 @RequestMapping("/xiaozhi")
 public class XiaozhiController {
@@ -56,60 +58,13 @@ public class XiaozhiController {
         }
     }
 
-    // 新增接口：获取聊天历史
-//    @Operation(summary = "获取聊天历史")
-//    @GetMapping("/history/{memoryId}")
-//    public Flux<String> getHistory(@PathVariable Long memoryId) {
-//        // 实际实现应从MongoChatMemoryStore中获取历史记录
-//        // 这里仅作示例
-//        return Flux.just("历史记录获取接口 - memoryId: " + memoryId);
-//    }
-//    @GetMapping("/history/{memoryId}")
-//    public List<MessageDTO> getHistory(@PathVariable Long memoryId) {
-//        // 从MongoDB查询聊天记录
-//        List<ChatMessages> chatMessages = mongoChatMemoryStore.getMessages(memoryId);
-//        // 转换为前端需要的DTO（包含sender、text等）
-//        return chatMessages.stream().map(chatMessage -> {
-//            MessageDTO dto = new MessageDTO();
-//            dto.setId(UUID.randomUUID().toString());
-//            dto.setSender(chatMessage.type() == ChatMessageType.USER ? "user" : "bot");
-//            dto.setText(chatMessage.text());
-//            return dto;
-//        }).collect(Collectors.toList());
-//    }
+
+
+
+
     @Autowired
     private MongoChatMemoryStore mongoChatMemoryStore;
-//    @GetMapping("/history/{memoryId}")
-//    public List<MessageDTO> getHistory(@PathVariable Long memoryId) {
-//        // 参数验证
-//        if (memoryId == null) {
-//            return new ArrayList<>();
-//        }
-//
-//        try {
-//            // 从MongoDB查询聊天记录
-//            List<ChatMessages> chatMessages = mongoChatMemoryStore.getMessages(memoryId);
-//
-//            // 空值检查
-//            if (chatMessages == null) {
-//                chatMessages = new ArrayList<>();
-//            }
-//
-//            // 转换为前端需要的DTO（包含sender、text等）
-//            return chatMessages.stream().map(chatMessage -> {
-//                MessageDTO dto = new MessageDTO();
-//                // 使用消息本身的唯一标识，而不是随机生成
-//                //dto.setId(chatMessage.id());
-//                dto.setSender(chatMessage.type() == ChatMessageType.USER ? "user" : "bot");
-//             //   dto.setText(chatMessage.text());
-//                return dto;
-//            }).collect(Collectors.toList());
-//        } catch (Exception e) {
-//            // 异常处理：记录日志并返回空列表
-//            // logger.error("Failed to retrieve chat history for memoryId: " + memoryId, e);
-//            return new ArrayList<>();
-//        }
-//    }
+
 
     @Operation(summary = "获取聊天历史")
     @GetMapping("/history/{memoryId}")

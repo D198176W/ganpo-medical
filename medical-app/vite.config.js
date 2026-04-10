@@ -1,4 +1,21 @@
 // vite.config.js
+// import { defineConfig } from 'vite'
+// import vue from '@vitejs/plugin-vue'
+// import { resolve } from 'path'
+
+// export default defineConfig({
+//   plugins: [vue()],
+//   resolve: {
+//     alias: {
+//       '@': resolve(__dirname, 'src') // 别名配置，保持原有逻辑
+//     }
+//   }
+
+
+// })
+
+
+
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
@@ -9,12 +26,19 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src') // 别名配置，保持原有逻辑
     }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   }
 
 
 })
-
-
 
 
 

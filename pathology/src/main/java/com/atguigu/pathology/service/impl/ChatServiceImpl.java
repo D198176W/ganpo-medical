@@ -26,7 +26,23 @@ public class ChatServiceImpl implements com.atguigu.pathology.service.ChatServic
 
     @Override
     public ChatResponse chat(ChatRequest req) {
-        Long sessionId = req.getSessionId() != null ? req.getSessionId() : 1L;
+        // 处理 sessionId，确保生成一个有效的数字
+        String sessionIdStr = req.getSessionId() != null && !req.getSessionId().isEmpty() ? req.getSessionId() : "1";
+        // 提取数字部分或使用哈希值
+        long sessionId;
+        try {
+            // 尝试从 sessionId 中提取数字
+            String numericPart = sessionIdStr.replaceAll("[^0-9]", "");
+            if (!numericPart.isEmpty()) {
+                sessionId = Long.parseLong(numericPart);
+            } else {
+                // 如果没有数字，使用哈希值
+                sessionId = Math.abs(sessionIdStr.hashCode());
+            }
+        } catch (Exception e) {
+            // 兜底方案
+            sessionId = 1L;
+        }
 
         // store user message
         ChatMessage userMsg = new ChatMessage();

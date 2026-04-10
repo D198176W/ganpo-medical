@@ -1,4 +1,4 @@
-package com.atguigu.javaailangchain4j.tools;
+package com.atguigu.consult.tools;
 
 
 //import com.atguigu.javaailangchain4j.entity.Appointment;
