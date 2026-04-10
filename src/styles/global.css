@@ -1,0 +1,171 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* 确保Font Awesome图标可用 */
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+@import 'https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css';
+
+/* 自定义组件样式 */
+/* @layer components {
+  .emergency-card {
+    @apply bg-white rounded-xl shadow-md p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer border-l-4;
+  }
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary/90 active:scale-95;
+  }
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-danger/90 active:scale-95;
+  }
+  .btn-secondary {
+    @apply bg-light text-dark hover:bg-gray-200 active:scale-95;
+  }
+  .step-item {
+    @apply flex items-start mb-4 last:mb-0;
+  }
+  .step-number {
+    @apply w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0;
+  }
+} */
+
+@layer components {
+  .emergency-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.25rem;
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .emergency-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-0.25rem);
+  }
+  
+  .emergency-card {
+    cursor: pointer;
+    border-left-width: 4px;
+  }
+
+  .btn {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition-property: all;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background-color: #1a7ae0;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+
+  .btn-danger {
+    background-color: var(--danger);
+    color: #fff;
+  }
+
+  .btn-danger:hover {
+    background-color: #e84d4a;
+  }
+
+  .btn-danger:active {
+    transform: scale(0.95);
+  }
+
+  .btn-secondary {
+    background-color: var(--light);
+    color: var(--dark);
+  }
+
+  .btn-secondary:hover {
+    background-color: #e5e7eb;
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.95);
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .step-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .step-number {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    background-color: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-right: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+}
+
+/* 自定义颜色 */
+@layer utilities {
+  .bg-primary { background-color: #1E40AF; }
+  .text-primary { color: #1E40AF; }
+  .bg-secondary { background-color: #10B981; }
+  .text-secondary { color: #10B981; }
+  .bg-warning { background-color: #F59E0B; }
+  .text-warning { color: #F59E0B; }
+  .bg-danger { background-color: #EF4444; }
+  .text-danger { color: #EF4444; }
+  .bg-dark { background-color: #1F2937; }
+  .text-dark { color: #1F2937; }
+  .bg-light { background-color: #F3F4F6; }
+  .text-light { color: #F3F4F6; }
+}
+
+/* 添加健康档案相关的CSS变量 */
+:root {
+  --primary: #1E88E5;
+  --primary-dark: #1565C0;
+  --secondary: #00BCD4;
+  --success: #4CAF50;
+  --warning: #FF9800;
+  --danger: #E53935;
+  --light: #f5f7fa;
+  --dark: #333;
+  --gray: #666;
+  --border: #e0e0e0;
+  --card: #fff;
+}
+
+:root {
+  --primary: #1E88E5;
+  --secondary: #4CAF50;
+  --warning: #FF9800;
+  --danger: #E53935;
+  --light: #F5F7FA;
+  --dark: #333333;
+}
+
