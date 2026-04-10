@@ -15,6 +15,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+<<<<<<< HEAD
+=======
+import org.springframework.web.multipart.MultipartFile;
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
@@ -22,7 +26,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
 @Tag(name="硅谷小智")
+=======
+@Tag(name="赣鄱医枢")
+
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 @RestController
 @RequestMapping("/xiaozhi")
 public class XiaozhiController {
@@ -56,6 +65,7 @@ public class XiaozhiController {
         }
     }
 
+<<<<<<< HEAD
     // 新增接口：获取聊天历史
 //    @Operation(summary = "获取聊天历史")
 //    @GetMapping("/history/{memoryId}")
@@ -110,6 +120,15 @@ public class XiaozhiController {
 //            return new ArrayList<>();
 //        }
 //    }
+=======
+
+
+
+
+    @Autowired
+    private MongoChatMemoryStore mongoChatMemoryStore;
+
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 
     @Operation(summary = "获取聊天历史")
     @GetMapping("/history/{memoryId}")

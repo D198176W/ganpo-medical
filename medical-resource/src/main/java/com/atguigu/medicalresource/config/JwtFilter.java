@@ -1,14 +1,26 @@
 package com.atguigu.medicalresource.config;
 
+<<<<<<< HEAD
 import com.atguigu.medicalresource.dto.ApiResponse;
 import com.atguigu.medicalresource.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+=======
+import com.atguigu.medicalresource.service.UserService;
+import com.atguigu.medicalresource.util.JwtUtil;
+
+
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 import java.io.IOException;
 
 
@@ -18,6 +30,7 @@ public class JwtFilter implements Filter {
     @Autowired
     private JwtUtil jwtUtil;
 
+<<<<<<< HEAD
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 存储需要排除的 URL
@@ -96,4 +109,28 @@ public class JwtFilter implements Filter {
                 objectMapper.writeValueAsString(ApiResponse.fail(message))
         );
     }
+=======
+    @Autowired
+    private UserService userService;
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                String username = jwtUtil.parseToken(token);
+                if (username != null) {
+                    // 将用户名放入 request attribute，service 层可取出
+                    request.setAttribute("currentUser", username);
+                }
+            } catch (Exception e) {
+                // token 异常：忽略，这样接口可选择是否需要鉴权
+            }
+        }
+        chain.doFilter(request, response);
+    }
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 }

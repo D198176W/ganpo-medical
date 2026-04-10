@@ -430,6 +430,18 @@ export default {
       this.scrollToBottom();
 
       // 准备请求 payload（与后端 ChatRequestDTO 对齐：userId, role, query, sessionId）
+<<<<<<< HEAD
+=======
+      // 确保 userId 和 sessionId 已初始化
+      if (!this.userId) {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        this.userId = userInfo.userId || userInfo.id || ('u-' + Date.now());
+      }
+      if (!this.sessionId) {
+        this.sessionId = localStorage.getItem('pathologySessionId') || this.generateSessionId();
+      }
+
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
       const payload = {
         userId: this.userId,
         role: this.isVerifiedDoctor ? 'doctor' : 'user',

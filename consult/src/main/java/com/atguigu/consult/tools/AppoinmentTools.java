@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package com.atguigu.javaailangchain4j.tools;
+=======
+package com.atguigu.consult.tools;
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
 
 
 //import com.atguigu.javaailangchain4j.entity.Appointment;

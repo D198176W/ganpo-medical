@@ -14,6 +14,7 @@ public class HospitalController {
     private HospitalService hospitalService;
 
     @GetMapping
+<<<<<<< HEAD
     public ApiResponse<Page<Hospital>> list(@RequestParam(value = "page",defaultValue = "1") int page,
                                             @RequestParam(value = "size", defaultValue = "10") int size,
                                             @RequestParam(value = "departmentId", required = false) String departmentId,
@@ -21,16 +22,31 @@ public class HospitalController {
                                             @RequestParam(value = "lat", required = false) Double lat,
                                             @RequestParam(value = "lng",required = false) Double lng,
                                             @RequestParam(value = "q", required = false) String q) {
+=======
+    public ApiResponse<Page<Hospital>> list(@RequestParam(defaultValue = "1") int page,
+                                            @RequestParam(defaultValue = "10") int size,
+                                            @RequestParam(required = false) String departmentId,
+                                            @RequestParam(required = false) String sort,
+                                            @RequestParam(required = false) Double lat,
+                                            @RequestParam(required = false) Double lng,
+                                            @RequestParam(required = false) String q) {
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
         Page<Hospital> p = hospitalService.pageList(page, size, departmentId, sort, lat, lng, q);
         return ApiResponse.ok(p);
     }
 
     @GetMapping("/{id}")
+<<<<<<< HEAD
     public ApiResponse<Hospital> detail(@PathVariable("id") Long id) {
         Hospital h = hospitalService.getById(id);
         if (h == null) {
             return ApiResponse.fail("医院不存在");
         }
+=======
+    public ApiResponse<Hospital> detail(@PathVariable Long id) {
+        Hospital h = hospitalService.getById(id);
+        if (h == null) return ApiResponse.fail("医院不存在");
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
         return ApiResponse.ok(h);
     }
 }

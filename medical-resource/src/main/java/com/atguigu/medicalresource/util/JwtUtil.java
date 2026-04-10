@@ -64,8 +64,9 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
-        System.out.println("执行解析逻辑");
-        System.out.println("注册时的用户名"+claims.getSubject());
-        return claims.getSubject(); //返回注册时的用户名
+        //System.out.println("执行解析逻辑");
+       // System.out.println("注册时的用户名"+claims.getSubject());
+        //返回注册时的用户名
+        return claims.getSubject();
     }
 }
