@@ -1,0 +1,171 @@
+# ????
+server:
+  port: 8081
+  servlet:
+    context-path: /health
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+
+# Spring??
+spring:
+  application:
+    name: health-management
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:mysql://192.168.88.132:3306/health_management?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: root
+<<<<<<< HEAD
+    password:
+=======
+    password: Cmab-19817
+>>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+      # JPA/Hibernate??
+  jpa:
+     hibernate:
+        ddl-auto: update
+     show-sql: true
+     properties:
+          hibernate:
+            dialect: org.hibernate.dialect.MySQL8Dialect
+            format_sql: true
+
+
+
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  data:
+    redis:
+      host: 192.168.88.132
+
+# MyBatis Plus??
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      insert-strategy: always
+      update-strategy: always
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.atguigu.healthmanagement.entity
+
+jwt:
+  secret: "HPjmd7aBlGWNSK4W6x6IDhrxe+fG+KZ6xp+6EAgd0cpkmYcnq2tuVxYY+C7ccZ/W
+  2HHDypsKWpiLRHLJ+0OvkaU43lzyFNPUANgewnXyRclGvnAVMqHMVu1sTQV7CpZE
+  AMJcIAfZlwX8bi7GWOk2HEuVMSJAqJS5CULIU86iBhHbgnVf6UaIJn2USXlx7co/
+  mpYRyyWmi5uzWPmfNjjYQjf2ZaH3JokZk2xM04OLLxySqFUZT7lFW+TISS+I5tS5
+  JFdSD2NuyJooMo0FRrTNcpG1dU65OrlEQSWhGscJB+SjHTAu/BadfYwDgo1MdSyC
+  XJDtF05MgJ9mo5AFDGiR7w=="
+  expiration: 86400000
+  header: "Authorization"
+  prefix: "Bearer"
+
+security:
+  ignored:
+    - /api/auth/**
+    - /api/hospitals
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /webjars/**
+    - /doc.html
+    - /favicon.ico
+
+
+
+
+# ????
+logging:
+  level:
+    com.atguigu.healthmanagement: DEBUG
+    com.baomidou.mybatisplus: INFO
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+  file:
+    name: logs/health-management.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Swagger???API???
+swagger:
+  enabled: true
+  title: ??????API??
+  description: ???????????????????
+  version: 1.0.0
+  base-package: com.atguigu.healthmanagement.controller
+
+# ????
+health:
+  management:
+    # ??????
+    exercise:
+      target-days-per-week: 3
+      target-duration-per-week: 150  # ??
+    # ??????
+    sleep:
+      target-hours-per-day: 7
+      early-sleep-time: "22:00"  # ????
+      late-sleep-time: "23:30"   # ????
+    # ????
+    reminder:
+      enabled: true
+      check-interval: 300000  # 5????????
+
+# ????????????
+mail:
+  host: smtp.163.com
+  port: 465
+  username: health-management@163.com
+  password: your-email-password
+  protocol: smtps
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+        ssl:
+          enable: true
+
+# ??????
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/public/,file:./uploads/
+  mvc:
+    static-path-pattern: /static/**
+
+# ???????????
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+debug: true
