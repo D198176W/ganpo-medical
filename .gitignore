@@ -48,3 +48,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### 大文件归档 ###
+*.zip
