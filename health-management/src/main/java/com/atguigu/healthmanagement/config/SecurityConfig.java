@@ -32,9 +32,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Autowired
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean

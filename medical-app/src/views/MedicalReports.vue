@@ -87,7 +87,7 @@
           <i class="fas fa-file-medical-alt"></i>
         </div>
         <h3 class="empty-text">暂无检查报告</h3>
-        <a href="#" class="empty-btn">预约检查</a>
+        <button type="button" class="empty-btn" @click="goBack">返回上一页</button>
       </div>
     </div>
     
@@ -315,6 +315,7 @@ export default {
 
     // 下载报告
     const downloadReport = (report) => {
+      if (!report) return
       // 在实际应用中，这里应该发送请求到服务器下载报告文件
       console.log('下载报告:', report)
       // 这里可以添加提示消息

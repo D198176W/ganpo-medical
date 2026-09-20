@@ -74,21 +74,13 @@
 			<version>${knife4j.version}</version>
 		</dependency>
 
-		<!-- 基于open-ai的langchain4j接口：ChatGPT、deepseek都是open-ai标准下的大模型 -->
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
-			<version>1.0.1-beta6</version>
-
-		</dependency>
-
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-pinecone</artifactId>
 		</dependency>
 
-
-
+		<!-- 本地向量检索引擎：使用 langchain4j-easy-rag 中的 InMemoryEmbeddingStore
+		     （FAISS 在 beta3 版本 Maven Central 未发布，InMemoryEmbeddingStore 功能等效） -->
 
 
 
@@ -97,6 +89,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+
+		<!-- Redis：Unified Cache（LLM 回答缓存 + 命中率统计） -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
 		<!-- Mysql Connector -->
@@ -172,6 +170,20 @@
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-ollama-spring-boot-starter</artifactId>
 			<version>${langchain4j.version}</version>
+		</dependency>
+
+		<!-- MCP（Model Context Protocol）：LangChain4j MCP Client（tools/list、tools/call） -->
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-mcp</artifactId>
+			<version>${langchain4j.version}</version>
+		</dependency>
+
+		<!-- MCP 官方 Java SDK：用于构建 MCP Server（HTTP/SSE 传输） -->
+		<dependency>
+			<groupId>io.modelcontextprotocol.sdk</groupId>
+			<artifactId>mcp</artifactId>
+			<version>0.10.0</version>
 		</dependency>
 
 

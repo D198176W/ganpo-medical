@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ---------- 后端：编译 + 单元测试 ----------
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: 编译 consult 模块
+        run: mvn -B -pl consult -am compile -DskipTests
+
+      - name: 运行单元测试（Reflector/意图分类/加密/模型路由）
+        run: mvn -B -pl consult test
+
+  # ---------- 后端：评测冒烟（需要 LLM/向量库密钥，配置了 Secrets 才启用） ----------
+  evals-smoke:
+    runs-on: ubuntu-latest
+    # 未配置 Secrets 时跳过，避免阻塞主干 CI
+    if: ${{ vars.EVALS_ENABLED == 'true' }}
+    env:
+      DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+      PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: 运行评测集（RAG 检索准确率 + 端到端问答合规）
+        run: mvn -B -pl consult test -Dtest='RagRetrievalEvalTest,MedicalQaEvalTest' -DfailIfNoTests=false
+
+  # ---------- 前端：构建 ----------
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: medical-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: medical-app/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建
+        run: npm run build
+
+  # ---------- Docker：编排配置校验 ----------
+  docker-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 docker-compose 配置
+        run: docker compose config --quiet

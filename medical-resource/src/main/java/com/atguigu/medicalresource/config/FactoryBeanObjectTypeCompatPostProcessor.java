@@ -4,17 +4,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-<<<<<<< HEAD
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
-=======
 import org.springframework.core.log.LogMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 import java.util.Arrays;
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+
 import java.util.Objects;
 
 /**

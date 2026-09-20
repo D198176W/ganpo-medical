@@ -14,7 +14,7 @@ app.use(router)
 app.mount('#app')
 
 // 开发环境下的错误处理
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   app.config.errorHandler = (err, vm, info) => {
     console.error('Vue错误:', err)
     console.info('错误信息:', info)

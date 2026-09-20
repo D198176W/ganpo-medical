@@ -2,7 +2,7 @@
   <div class="personal-container">
     <!-- 背景图片 -->
     <div class="bg-container">
-      <img src="@/assets/images/personal-bg.png" alt="个人中心背景" class="bg-img">
+      <img src="/src/assets/images/personal-bg.png" alt="个人中心背景" class="bg-img">
     </div>
 
     <!-- 顶部导航栏 -->
@@ -14,7 +14,7 @@
         <div class="user-avatar">
           <img :src="userInfo.avatar" alt="用户头像">
           <div class="avatar-edit" @click="editAvatar">
-            <img src="@/assets/images/camera-icon.png" alt="编辑头像">
+            <img src="/src/assets/images/camera-icon.png" alt="编辑头像">
           </div>
         </div>
         <div class="user-details">
@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="edit-profile" @click="editProfile">
-          <img src="@/assets/images/edit-icon.png" alt="编辑资料">
+          <img src="/src/assets/images/edit-icon.png" alt="编辑资料">
         </div>
       </div>
       
@@ -51,7 +51,7 @@
       <div class="nav-grid">
         <div class="nav-item" v-for="item in personalServices" :key="item.id" @click="navigateTo(item.route)">
           <div class="icon-wrapper" :class="item.colorClass">
-            <img :src="item.icon" :alt="item.text">
+            <i :class="item.iconClass"></i>
             <div v-if="item.badge" class="service-badge">{{ item.badge }}</div>
           </div>
           <span class="nav-text">{{ item.text }}</span>
@@ -69,14 +69,14 @@
       <div class="records-grid">
         <div class="record-card" v-for="record in healthRecords" :key="record.id" @click="navigateTo(record.route)">
           <div class="record-icon" :class="record.bgClass">
-            <img :src="record.icon" :alt="record.title">
+            <i :class="record.iconClass"></i>
           </div>
           <div class="record-info">
             <span class="record-title">{{ record.title }}</span>
             <span class="record-desc">{{ record.desc }}</span>
           </div>
           <div class="record-arrow">
-            <img src="@/assets/images/arrow-right.png" alt="右箭头">
+            <i class="fas fa-chevron-right"></i>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@
       <div class="plans-list">
         <div class="plan-item" v-for="plan in activePlans" :key="plan.id" @click="navigateTo(plan.route)">
           <div class="plan-icon">
-            <img :src="plan.icon" :alt="plan.title">
+            <i :class="plan.iconClass"></i>
           </div>
           <div class="plan-details">
             <span class="plan-title">{{ plan.title }}</span>
@@ -118,13 +118,13 @@
         <div class="setting-item" v-for="setting in systemSettings" :key="setting.id" @click="handleSetting(setting)">
           <div class="setting-left">
             <div class="setting-icon" :class="setting.colorClass">
-              <img :src="setting.icon" :alt="setting.title">
+              <i :class="setting.iconClass"></i>
             </div>
             <span class="setting-title">{{ setting.title }}</span>
           </div>
           <div class="setting-right">
             <span class="setting-value" v-if="setting.value">{{ setting.value }}</span>
-            <img src="@/assets/images/arrow-right.png" alt="右箭头" class="setting-arrow">
+            <i class="fas fa-chevron-right setting-arrow"></i>
           </div>
         </div>
       </div>
@@ -146,7 +146,7 @@ const router = useRouter()
 
 // 用户信息
 const userInfo = ref({
-  avatar: '@/assets/images/default-avatar.png',
+  avatar: '/src/assets/images/default-avatar.png',
   name: '张同学',
   account: '2024123456',
   tags: ['大学生医保', '健康监测']
@@ -165,7 +165,7 @@ const personalServices = ref([
     id: 1,
     text: '我的收藏',
     route: '/personal/favorites',
-    icon: '@/assets/images/favorite-icon.png',
+    iconClass: 'fas fa-heart pink-icon',
     colorClass: 'pink-bg',
     badge: '12'
   },
@@ -173,7 +173,7 @@ const personalServices = ref([
     id: 2,
     text: '我的报告',
     route: '/personal/reports',
-    icon: '@/assets/images/report-icon.png',
+    iconClass: 'fas fa-file-medical blue-icon',
     colorClass: 'blue-bg',
     badge: '5'
   },
@@ -181,14 +181,14 @@ const personalServices = ref([
     id: 3,
     text: '用药记录',
     route: '/personal/medication',
-    icon: '@/assets/images/medication-icon.png',
+    iconClass: 'fas fa-pills green-icon',
     colorClass: 'green-bg'
   },
   {
     id: 4,
     text: '健康评估',
     route: '/personal/assessment',
-    icon: '@/assets/images/assessment-icon.png',
+    iconClass: 'fas fa-clipboard-check orange-icon',
     colorClass: 'orange-bg'
   }
 ])
@@ -200,7 +200,7 @@ const healthRecords = ref([
     title: '体检报告',
     desc: '最近一次体检结果',
     route: '/personal/checkup',
-    icon: '@/assets/images/checkup-icon.png',
+    iconClass: 'fas fa-file-medical-alt blue-icon',
     bgClass: 'blue-bg'
   },
   {
@@ -208,7 +208,7 @@ const healthRecords = ref([
     title: '病历档案',
     desc: '历史就诊记录',
     route: '/personal/medical-history',
-    icon: '@/assets/images/history-icon.png',
+    iconClass: 'fas fa-notes-medical green-icon',
     bgClass: 'green-bg'
   },
   {
@@ -216,7 +216,7 @@ const healthRecords = ref([
     title: '用药记录',
     desc: '药品使用情况',
     route: '/personal/medication-records',
-    icon: '@/assets/images/medication-record.png',
+    iconClass: 'fas fa-prescription-bottle-alt orange-icon',
     bgClass: 'orange-bg'
   },
   {
@@ -224,7 +224,7 @@ const healthRecords = ref([
     title: '过敏信息',
     desc: '过敏原记录',
     route: '/personal/allergy',
-    icon: '@/assets/images/allergy-icon.png',
+    iconClass: 'fas fa-shield-virus purple-icon',
     bgClass: 'purple-bg'
   }
 ])
@@ -238,7 +238,7 @@ const activePlans = ref([
     status: 'active',
     statusText: '进行中',
     route: '/health/plan/weight-loss',
-    icon: '@/assets/images/weight-loss.png'
+    iconClass: 'fas fa-weight green-icon'
   },
   {
     id: 2,
@@ -247,7 +247,7 @@ const activePlans = ref([
     status: 'active',
     statusText: '进行中',
     route: '/health/plan/running',
-    icon: '@/assets/images/running.png'
+    iconClass: 'fas fa-running blue-icon'
   }
 ])
 
@@ -257,14 +257,14 @@ const systemSettings = ref([
     id: 1,
     title: '账号与安全',
     route: '/settings/account',
-    icon: '@/assets/images/security-icon.png',
+    iconClass: 'fas fa-shield-alt blue-icon',
     colorClass: 'blue-bg'
   },
   {
     id: 2,
     title: '消息通知',
     route: '/settings/notification',
-    icon: '@/assets/images/notification-icon.png',
+    iconClass: 'fas fa-bell green-icon',
     colorClass: 'green-bg',
     value: '开启'
   },
@@ -272,14 +272,14 @@ const systemSettings = ref([
     id: 3,
     title: '隐私设置',
     route: '/settings/privacy',
-    icon: '@/assets/images/privacy-icon.png',
+    iconClass: 'fas fa-user-secret orange-icon',
     colorClass: 'orange-bg'
   },
   {
     id: 4,
     title: '关于我们',
     route: '/settings/about',
-    icon: '@/assets/images/about-icon.png',
+    iconClass: 'fas fa-info-circle purple-icon',
     colorClass: 'purple-bg',
     value: 'v1.0.0'
   },
@@ -287,7 +287,7 @@ const systemSettings = ref([
     id: 5,
     title: '帮助与反馈',
     route: '/settings/help',
-    icon: '@/assets/images/help-icon.png',
+    iconClass: 'fas fa-headset pink-icon',
     colorClass: 'pink-bg'
   }
 ])
@@ -529,9 +529,28 @@ const handleLogout = () => {
   background: linear-gradient(135deg, #FCE4EC, #F8BBD0);
 }
 
-.icon-wrapper img {
-  width: 36px;
-  height: 36px;
+.icon-wrapper i {
+  font-size: 32px;
+}
+
+.icon-wrapper .pink-icon {
+  color: #F06292;
+}
+
+.icon-wrapper .blue-icon {
+  color: #42A5F5;
+}
+
+.icon-wrapper .green-icon {
+  color: #66BB6A;
+}
+
+.icon-wrapper .orange-icon {
+  color: #FFA726;
+}
+
+.icon-wrapper .purple-icon {
+  color: #AB47BC;
 }
 
 .service-badge {
@@ -624,9 +643,24 @@ const handleLogout = () => {
   margin-right: 12px;
 }
 
-.record-icon img {
-  width: 24px;
-  height: 24px;
+.record-icon i {
+  font-size: 24px;
+}
+
+.record-icon .blue-icon {
+  color: #42A5F5;
+}
+
+.record-icon .green-icon {
+  color: #66BB6A;
+}
+
+.record-icon .orange-icon {
+  color: #FFA726;
+}
+
+.record-icon .purple-icon {
+  color: #AB47BC;
 }
 
 .record-info {
@@ -696,9 +730,16 @@ const handleLogout = () => {
   border-radius: 10px;
 }
 
-.plan-icon img {
-  width: 24px;
-  height: 24px;
+.plan-icon i {
+  font-size: 24px;
+}
+
+.plan-icon .green-icon {
+  color: #66BB6A;
+}
+
+.plan-icon .blue-icon {
+  color: #42A5F5;
 }
 
 .plan-details {
@@ -788,9 +829,28 @@ const handleLogout = () => {
   margin-right: 12px;
 }
 
-.setting-icon img {
-  width: 20px;
-  height: 20px;
+.setting-icon i {
+  font-size: 20px;
+}
+
+.setting-icon .blue-icon {
+  color: #42A5F5;
+}
+
+.setting-icon .green-icon {
+  color: #66BB6A;
+}
+
+.setting-icon .orange-icon {
+  color: #FFA726;
+}
+
+.setting-icon .purple-icon {
+  color: #AB47BC;
+}
+
+.setting-icon .pink-icon {
+  color: #F06292;
 }
 
 .setting-title {

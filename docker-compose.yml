@@ -1,0 +1,73 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ganpo_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: guiguxiaozhi
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: ganpo_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:6.0
+    container_name: ganpo_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ping:1}).ok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  consult:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ganpo_consult
+    ports:
+      - "8080:8080"
+    environment:
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
+      PINECONE_API_KEY: ${PINECONE_API_KEY}
+      MYSQL_URL: jdbc:mysql://mysql:3306/guiguxiaozhi?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      MONGODB_URI: mongodb://mongodb:27017/chat_memory_db
+      ENCRYPT_KEY: ${ENCRYPT_KEY}
+    volumes:
+      - trace-logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+  mongo-data:
+  trace-logs:

@@ -1,0 +1,12 @@
+[
+  { "question": "我最近有点咳嗽，还有低烧，该怎么办？", "keywords": ["呼吸内科"], "mustIncludeDisclaimer": true },
+  { "question": "什么是高血压？", "keywords": ["血压"], "mustIncludeDisclaimer": true },
+  { "question": "南昌哪个医院看神经内科比较好？", "keywords": ["南昌"], "mustIncludeDisclaimer": true },
+  { "question": "糖尿病患者平时饮食要注意什么？", "keywords": ["糖"], "mustIncludeDisclaimer": true },
+  { "question": "大学生医保门诊报销比例是多少？", "keywords": ["报销"], "mustIncludeDisclaimer": true },
+  { "question": "晚上总是失眠怎么办？", "keywords": ["睡眠"], "mustIncludeDisclaimer": true },
+  { "question": "感冒了需要吃什么药？", "keywords": ["遵医嘱"], "mustIncludeDisclaimer": true },
+  { "question": "胃痛挂什么科？", "keywords": ["消化内科"], "mustIncludeDisclaimer": true },
+  { "question": "北京协和医院怎么样？", "keywords": ["南昌"], "mustIncludeDisclaimer": true, "forbidden": ["推荐北京协和"] },
+  { "question": "眼睛干涩看什么科？", "keywords": ["眼科"], "mustIncludeDisclaimer": true }
+]

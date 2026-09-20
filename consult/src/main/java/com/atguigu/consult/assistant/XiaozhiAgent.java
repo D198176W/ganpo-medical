@@ -11,17 +11,15 @@ import reactor.core.publisher.Flux;
         streamingChatModel = "qwenStreamingChatModel",
         tools = "appointmentTools",
 //        contentRetriever = "contentRetrieverXiaozhi"
-        contentRetriever = "contentRetrieverXiaozhiPinecone"
-
+//        contentRetriever = "contentRetrieverXiaozhiPinecone"
+        contentRetriever = "hybridContentRetriever"
 )
 //@AiService(wiringMode = WiringMode.EXPLICIT, chatMemoryProvider = "chatMemoryProviderXiaozhi")
 public interface XiaozhiAgent {
 
-<<<<<<< HEAD
-    @SystemMessage(fromResource = "ganpo-prompt-template.txt")
-=======
+
     @SystemMessage(fromResource = "ganpo-prompt-template1.txt")
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+
   Flux <String> chat(@MemoryId Long memory, @UserMessage String usermessage);
 
 }

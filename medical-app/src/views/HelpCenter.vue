@@ -108,6 +108,7 @@
       title="联系客服" 
       @close="closeContactModal"
     >
+      <template #body>
       <form @submit.prevent="submitContactForm">
         <div class="form-group">
           <label class="form-label">问题类型</label>
@@ -144,6 +145,7 @@
           <button type="submit" class="action-btn btn-primary">提交</button>
         </div>
       </form>
+      </template>
     </Modal>
     
     <!-- Toast 提示 -->

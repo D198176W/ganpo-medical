@@ -86,7 +86,9 @@
               >
             </div>
             <div class="content">
-              {{ message.text }}
+              <!-- 生成式 UI：bot 消息按内容结构动态渲染（表格/警告卡片/分节） -->
+              <BotMessage v-if="message.sender === 'bot'" :text="message.text" />
+              <template v-else>{{ message.text }}</template>
             </div>
           </div>
         </div>
@@ -119,14 +121,12 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'  // 引入axios
+import BotMessage from '@/components/BotMessage.vue'
 
 // 导入头像图片
 import patientAvatar from '@/assets/images/patient.png'
 import doctorAvatar from '@/assets/images/doctor.png'
-
-const router = useRouter()
 
 // 响应式数据
 const messages = ref([])
@@ -136,7 +136,8 @@ const isRecording = ref(false)
 const messagesContainer = ref(null)
 const inputElement = ref(null)
 const memoryId = ref(null)  // 对话唯一标识
-const API_BASE_URL = 'http://localhost:8080/xiaozhi'  // 后端接口地址
+const API_BASE_URL = import.meta.env.VITE_CONSULT_API_BASE || '/xiaozhi'
+const HISTORY_KEY = 'consultChatHistory'
 
 // 计算属性
 const showWelcome = computed(() => messages.value.length === 0)
@@ -180,6 +181,13 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 onMounted(() => {
   if (!memoryId.value) {
     memoryId.value = Date.now()  // 用时间戳作为唯一标识
+  }
+  try {
+    const cached = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]')
+    chatHistory.value = Array.isArray(cached) ? cached : []
+  } catch (error) {
+    console.warn('读取聊天历史失败，已重置', error)
+    chatHistory.value = []
   }
   if (inputElement.value) {
     inputElement.value.focus()
@@ -271,31 +279,52 @@ const sendMessage = async () => {
     text: message
   });
   userInput.value = '';
+  chatHistory.value.unshift({
+    question: message,
+    timestamp: new Date().toISOString(),
+    memoryId: memoryId.value
+  })
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(chatHistory.value.slice(0, 20)))
+  } catch (error) {
+    console.warn('保存聊天历史失败:', error)
+  }
+  scrollToBottom();
+
+  // 先占位一条 bot 消息，流式追加
+  const botMessage = {
+    id: Date.now() + 1,
+    sender: 'bot',
+    text: ''
+  };
+  messages.value.push(botMessage);
   scrollToBottom();
 
   try {
-    // 发送请求，响应类型设为text
-    const response = await axios.post(
-      `${API_BASE_URL}/chat`,
-      { memoryId: memoryId.value, message: message },
-      { responseType: 'text' }
-    );
-
-    // 直接使用完整响应内容
-    messages.value.push({
-      id: Date.now() + 1,
-      sender: 'bot',
-      text: response.data  // 后端返回的完整文本
+    // fetch + ReadableStream 实现真流式渲染（逐 token 更新，生成式 UI 同步重组）
+    const response = await fetch(`${API_BASE_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memoryId: memoryId.value, message: message })
     });
-    scrollToBottom();
+
+    if (!response.ok || !response.body) {
+      throw new Error('请求失败: ' + response.status);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      botMessage.text += decoder.decode(value, { stream: true });
+      scrollToBottom();
+    }
+    botMessage.text += decoder.decode();
 
   } catch (error) {
     console.error('发送消息失败：', error);
-    messages.value.push({
-      id: Date.now() + 2,
-      sender: 'bot',
-      text: '抱歉，消息发送失败，请重试'
-    });
+    botMessage.text = botMessage.text || '抱歉，消息发送失败，请重试';
   }
 };
 // 快速提问
@@ -326,9 +355,16 @@ const loadHistory = async (historyItem) => {
 const clearHistory = async () => {
   if (confirm('确定要清除所有聊天记录吗？')) {
     try {
-      await axios.delete(`${API_BASE_URL}/history/${memoryId.value}`)
+      if (memoryId.value) {
+        await axios.delete(`${API_BASE_URL}/history/${memoryId.value}`)
+      }
       messages.value = []
       chatHistory.value = []
+      try {
+        localStorage.removeItem(HISTORY_KEY)
+      } catch (error) {
+        console.warn('清除聊天历史存储失败:', error)
+      }
     } catch (error) {
       console.error('清除历史记录失败：', error)
       alert('清除历史记录失败，请重试')

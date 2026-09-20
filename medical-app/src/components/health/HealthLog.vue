@@ -257,7 +257,11 @@ const saveHealthLog = () => {
     ...props.healthLogs,
     [selectedDate.value]: { ...currentLog.value }
   }
-  localStorage.setItem('healthLogs', JSON.stringify(updatedLogs))
+  try {
+    localStorage.setItem('healthLogs', JSON.stringify(updatedLogs))
+  } catch (error) {
+    console.warn('保存健康日志失败:', error)
+  }
   
   // 通知父组件更新
   emit('update:healthLogs', updatedLogs)

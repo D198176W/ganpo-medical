@@ -22,7 +22,7 @@
           <div class="card-status normal">正常</div>
         </div>
         
-        <div class="overview-card" @click="navigateTo('/health/data')">
+        <div class="overview-card" @click="navigateTo('/health/foot')">
           <div class="card-icon">
             <i class="fas fa-walking"></i>
           </div>
@@ -87,7 +87,7 @@
     <div class="health-plans">
       <div class="section-header">
         <span class="section-title">我的健康计划</span>
-        <span class="see-all" @click="navigateTo('/health/plans')">管理计划 ></span>
+        <span class="see-all" @click="navigateTo('/health/plan')">管理计划 ></span>
       </div>
       
       <div class="plans-grid">
@@ -139,8 +139,23 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from '@/components/common/NavBar.vue'
+import Toast from '@/components/common/Toast.vue'
 
 const router = useRouter()
+
+// Toast 相关
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType = ref('info')
+
+const showtoast = (message, type = 'info') => {
+  toastMessage.value = message
+  toastType.value = type
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 2000)
+}
 
 const healthTools = ref([
   {
@@ -258,7 +273,12 @@ const todayReminders = ref([
 ])
 
 const navigateTo = (route) => {
-  router.push(route)
+  router.push(route).catch((error) => {
+    // ignore duplicate navigation; log only unexpected failures
+    if (error && error.name !== 'NavigationDuplicated') {
+      console.warn('导航失败:', error)
+    }
+  })
 }
 
 const completeReminder = (id) => {

@@ -1,6 +1,5 @@
 // vite.config.js
-<<<<<<< HEAD
-=======
+
 // import { defineConfig } from 'vite'
 // import vue from '@vitejs/plugin-vue'
 // import { resolve } from 'path'
@@ -18,7 +17,7 @@
 
 
 
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
@@ -29,18 +28,37 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src') // 别名配置，保持原有逻辑
     }
-<<<<<<< HEAD
-=======
+
   },
   server: {
     proxy: {
-      '/api': {
+      '/api/chat': {
         target: 'http://localhost:8082',
+        changeOrigin: true,
+        secure: false
+      },
+      '/api/knowledge': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+        secure: false
+      },
+      '/api/images': {
+        target: 'http://localhost:8082',
+        changeOrigin: true,
+        secure: false
+      },
+      '/api': {
+        target: 'http://localhost:8083',
+        changeOrigin: true,
+        secure: false
+      },
+      '/xiaozhi': {
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false
       }
     }
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+
   }
 
 
@@ -48,8 +66,3 @@ export default defineConfig({
 
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d

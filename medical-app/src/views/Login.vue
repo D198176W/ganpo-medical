@@ -168,13 +168,13 @@
 
       <!-- 用户协议模态框 -->
       <Modal 
-       :visible="showUserAgreementModal"   
+       :show="showUserAgreementModal"   
         title="用户协议"
         @close="showUserAgreementModal = false"
       >
         <div class="modal-content">
           <p class="disclaimer-bold">1. 服务条款</p>
-          <p>1.1 本服务由赣鄱医枢RAG增强大模型提供，用户在使用本服务前应仔细阅读本协议。</p>
+          <p>1.1 本服务由赣鄱医枢 RAG 增强大模型提供，用户在使用本服务前应仔细阅读本协议。</p>
           <p>1.2 用户点击"注册"或"登录"按钮，即表示用户同意并接受本协议的全部条款。</p>
           
           <p class="disclaimer-bold">2. 用户信息</p>
@@ -190,7 +190,7 @@
 
       <!-- 免责声明弹窗 -->
       <Modal 
-        :visible="showDisclaimerModal" 
+        :show="showDisclaimerModal" 
         title="医疗建议免责声明"
         @close="showDisclaimerModal = false"
       >
@@ -206,6 +206,13 @@
           </button>
         </template>
       </Modal>
+
+      <!-- Toast 提示 -->
+      <Toast 
+        :show="showToast" 
+        :message="toastMessage" 
+        @hide="showToast = false"
+      />
     </div>
   </div>
 </template>
@@ -213,25 +220,32 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useToast } from '@/composables/useToast.js'
 import { setStorage, getStorage } from '@/utils/storage.js'
 import Modal from '@/components/common/Modal.vue'
-import {createRouter, createWebHistory} from 'vue-router'
-import Home from '@/views/Home.vue'
+import Toast from '@/components/common/Toast.vue'
+import { sendCode, register as apiRegister, login as apiLogin, wechatLogin as apiWechatLogin } from '@/api/auth.js'
 
 const router = useRouter()
-const routes =[
-  {path: '/',component: Home},
-  {path: 'login',component: () => import('@/views/Login.vue')}
-]
-const { showToast } = useToast()
+
+// Toast 相关
+const showToast = ref(false)
+const toastMessage = ref('')
+const toastType = ref('info') // success, warning, error, info
+
+const showtoast = (message, type = 'info') => {
+  toastMessage.value = message
+  toastType.value = type
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 2000)
+}
 
 // 图片路径
 import logo from '@/assets/images/logo.png' 
-import Logo from '@/assets/images/logo.png'
 import wechat from '@/assets/images/wechat-icon.png'
 const backgroundImage = logo
-const logoImage = Logo
+const logoImage = logo
 const wechatIcon = wechat
 
 
@@ -310,7 +324,7 @@ const resetCodeButtons = () => {
 
 const handleLoginNext = () => {
   if (!loginForm.account.trim()) {
-    showToast('请输入手机号或学号', 'warning')
+    showtoast('请输入手机号或学号', 'warning')
     return
   }
   
@@ -318,7 +332,7 @@ const handleLoginNext = () => {
   const isStudentId = /^\d{10}$/.test(loginForm.account)
   
   if (!isPhone && !isStudentId) {
-    showToast('请输入正确的手机号或10位学号', 'warning')
+    showtoast('请输入正确的手机号或 10 位学号', 'warning')
     return
   }
   
@@ -326,169 +340,216 @@ const handleLoginNext = () => {
   getLoginCode()
 }
 
-const getLoginCode = () => {
-  let countdown = 60
-  loginCodeDisabled.value = true
-  loginCodeText.value = `${countdown}秒后重发`
-  
-  const timer = setInterval(() => {
-    countdown--
-    if (countdown <= 0) {
-      clearInterval(timer)
-      loginCodeDisabled.value = false
-      loginCodeText.value = '获取验证码'
-    } else {
-      loginCodeText.value = `${countdown}秒后重发`
-    }
-  }, 1000)
-  
-  showToast('验证码已发送', 'success')
+const getLoginCode = async () => {
+  try {
+    // 调用发送验证码 API
+    await sendCode(loginForm.account, 'login')
+    
+    let countdown = 60
+    loginCodeDisabled.value = true
+    loginCodeText.value = `${countdown}秒后重发`
+    
+    const timer = setInterval(() => {
+      countdown--
+      if (countdown <= 0) {
+        clearInterval(timer)
+        loginCodeDisabled.value = false
+        loginCodeText.value = '获取验证码'
+      } else {
+        loginCodeText.value = `${countdown}秒后重发`
+      }
+    }, 1000)
+    
+    showtoast('验证码已发送', 'success')
+  } catch (error) {
+    console.error('发送验证码失败:', error)
+    showtoast(error.response?.data?.message || '发送验证码失败，请稍后重试', 'error')
+    loginCodeDisabled.value = false
+    loginCodeText.value = '获取验证码'
+  }
 }
 
-const handleLoginSubmit = () => {
+const handleLoginSubmit = async () => {
   if (!loginForm.code || loginForm.code.length !== 6) {
-    showToast('请输入6位验证码', 'warning')
+    showtoast('请输入 6 位验证码', 'warning')
     return
   }
   
-  showToast('登录成功，即将跳转到首页', 'success')
-  
-  // 保存用户信息到本地存储
-  const userTag = /^\d{10}$/.test(loginForm.account) ? "student" : "other"
-  const userInfo = {
-    account: loginForm.account,
-    userTag,
-    college: userTag === "student" ? guessCollege(loginForm.account) : "",
-    hasLoginBefore: true
-  }
-  
-  setStorage('userInfo', userInfo)
-  
-  // 跳转到首页
-  // setTimeout(() => {
-  //   router.push('/')
-  // }, 1000)
-  setTimeout(async () =>{
-    try{
-      await router.push('/')
-    } catch(error){
-      console.error('登录跳转失败：',error)
-      showToast('跳转失败，请手动进入首页','error')
+  try {
+    // 调用登录 API
+    const result = await apiLogin(loginForm.account, loginForm.code)
+    
+    // 保存用户信息到本地存储
+    const userTag = /^\d{10}$/.test(loginForm.account) ? "student" : "other"
+    const userInfo = {
+      account: loginForm.account,
+      userTag,
+      college: userTag === "student" ? guessCollege(loginForm.account) : "",
+      hasLoginBefore: true,
+      ...result.data // 合并后端返回的用户信息
     }
-  },1000)
-
-
-
-
+    
+    setStorage('userInfo', userInfo)
+    
+    showToast('登录成功，即将跳转到首页', 'success')
+    
+    // 跳转到首页
+    setTimeout(async () => {
+      try {
+        await router.push('/')
+      } catch (error) {
+        console.error('登录跳转失败：', error)
+        showtoast('跳转失败，请手动进入首页', 'error')
+      }
+    }, 1000)
+  } catch (error) {
+    console.error('登录失败:', error)
+    showtoast(error.response?.data?.message || '登录失败，请检查验证码是否正确', 'error')
+  }
 }
 
 const handleRegisterNext = () => {
   if (!registerForm.studentId.trim()) {
-    showToast('请输入学号', 'warning')
+    showtoast('请输入学号', 'warning')
     return
   }
   
   if (registerForm.collegeIndex === -1) {
-    showToast('请选择所属高校', 'warning')
+    showtoast('请选择所属高校', 'warning')
     return
   }
   
   if (!/^\d{10}$/.test(registerForm.studentId)) {
-    showToast('请输入10位数字学号', 'warning')
+    showtoast('请输入 10 位数字学号', 'warning')
     return
   }
   
   registerStep.value = 2
 }
 
-const getRegisterCode = () => {
+const getRegisterCode = async () => {
   if (!registerForm.phone || registerForm.phone.length !== 11) {
-    showToast('请先输入正确的手机号', 'warning')
+    showtoast('请先输入正确的手机号', 'warning')
     return
   }
   
-  let countdown = 60
-  registerCodeDisabled.value = true
-  registerCodeText.value = `${countdown}秒后重发`
-  
-  const timer = setInterval(() => {
-    countdown--
-    if (countdown <= 0) {
-      clearInterval(timer)
-      registerCodeDisabled.value = false
-      registerCodeText.value = '获取验证码'
-    } else {
-      registerCodeText.value = `${countdown}秒后重发`
-    }
-  }, 1000)
-  
-  showToast('验证码已发送', 'success')
+  try {
+    // 调用发送验证码 API
+    await sendCode(registerForm.phone, 'register')
+    
+    let countdown = 60
+    registerCodeDisabled.value = true
+    registerCodeText.value = `${countdown}秒后重发`
+    
+    const timer = setInterval(() => {
+      countdown--
+      if (countdown <= 0) {
+        clearInterval(timer)
+        registerCodeDisabled.value = false
+        registerCodeText.value = '获取验证码'
+      } else {
+        registerCodeText.value = `${countdown}秒后重发`
+      }
+    }, 1000)
+    
+    showtoast('验证码已发送', 'success')
+  } catch (error) {
+    console.error('发送验证码失败:', error)
+    showtoast(error.response?.data?.message || '发送验证码失败，请稍后重试', 'error')
+    registerCodeDisabled.value = false
+    registerCodeText.value = '获取验证码'
+  }
 }
 
-const handleRegisterSubmit = () => {
+const handleRegisterSubmit = async () => {
   if (!registerForm.phone || registerForm.phone.length !== 11) {
-    showToast('请输入正确的手机号', 'warning')
+    showtoast('请输入正确的手机号', 'warning')
     return
   }
   
   if (!registerForm.code || registerForm.code.length !== 6) {
-    showToast('请输入6位验证码', 'warning')
+    showtoast('请输入 6 位验证码', 'warning')
     return
   }
   
   if (!agreementChecked.value) {
-    showToast('请阅读并同意用户协议和免责声明', 'warning')
+    showtoast('请阅读并同意用户协议和免责声明', 'warning')
     return
   }
   
-  showToast('注册成功，即将跳转到首页', 'success')
-  
-  // 保存用户信息到本地存储
-  const userInfo = {
-    studentId: registerForm.studentId,
-    phone: registerForm.phone,
-    college: colleges.value[registerForm.collegeIndex],
-    userTag: "student",
-    hasLoginBefore: true
-  }
-  
-  setStorage('userInfo', userInfo)
-  
-  // 跳转到首页
-  // setTimeout(() => {
-  //   router.push('/')
-  // }, 1000)
-
-  setTimeout(async()=>{
-    try{
-      await router.push('/')
-    }catch(error){
-      console.error('注册跳转失败：',error)
-      showToast('跳转失败，请手动进入首页','error')
-    }
-  },1000)
-}
-
-const handleWechatLogin = () => {
-  if (confirm("是否允许微信授权登录？")) {
-    showToast('微信登录成功，即将跳转到首页', 'success')
+  try {
+    // 调用注册 API
+    const result = await apiRegister({
+      studentId: registerForm.studentId,
+      phone: registerForm.phone,
+      code: registerForm.code,
+      college: colleges.value[registerForm.collegeIndex]
+    })
     
     // 保存用户信息到本地存储
     const userInfo = {
-      nickName: "微信用户",
-      avatarUrl: wechatIcon,
-      userTag: "other",
-      hasLoginBefore: true
+      studentId: registerForm.studentId,
+      phone: registerForm.phone,
+      college: colleges.value[registerForm.collegeIndex],
+      userTag: "student",
+      hasLoginBefore: true,
+      ...result.data // 合并后端返回的用户信息
     }
     
     setStorage('userInfo', userInfo)
     
+    showtoast('注册成功，即将跳转到首页', 'success')
+    
     // 跳转到首页
-    setTimeout(() => {
-      router.push('/')
+    setTimeout(async () => {
+      try {
+        await router.push('/')
+      } catch (error) {
+        console.error('注册跳转失败：', error)
+        showtoast('跳转失败，请手动进入首页', 'error')
+      }
     }, 1000)
+  } catch (error) {
+    console.error('注册失败:', error)
+    showtoast(error.response?.data?.message || '注册失败，请稍后重试', 'error')
+  }
+}
+
+const handleWechatLogin = async () => {
+  // 这里需要后端实现微信 OAuth 流程
+  // 简化处理：模拟微信登录
+  if (confirm("是否允许微信授权登录？")) {
+    try {
+      // 调用微信登录 API（需要后端实现）
+      // const result = await apiWechatLogin('mock-wechat-code')
+      
+      // 保存用户信息到本地存储
+      const userInfo = {
+        nickName: "微信用户",
+        avatarUrl: wechatIcon,
+        userTag: "other",
+        hasLoginBefore: true
+      }
+      
+      setStorage('userInfo', userInfo)
+      
+      showtoast('微信登录成功，即将跳转到首页', 'success')
+      
+      // 跳转到首页
+      setTimeout(async () => {
+        try {
+          await router.push('/')
+        } catch (error) {
+          console.error('微信登录跳转失败：', error)
+          showtoast('跳转失败，请手动进入首页', 'error')
+        }
+      }, 1000)
+    } catch (error) {
+      console.error('微信登录失败:', error)
+      showtoast('微信登录失败，请稍后重试', 'error')
+    }
   } else {
-    showToast('您已取消微信授权', 'info')
+    showtoast('您已取消微信授权', 'info')
   }
 }
 
@@ -510,17 +571,6 @@ const guessCollege = (studentId) => {
   }
   return collegeMap[prefix] || "未知高校"
 }
-
-const props = defineProps({
-  visible: { // 需与 Login.vue 中传递的属性名一致
-    type: Boolean,
-    default: false
-  },
-  title: {
-    type: String,
-    default: ''
-  }
-})
 
 onMounted(() => {
   // 检查是否已经登录

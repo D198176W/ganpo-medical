@@ -25,7 +25,19 @@ public class HospitalServiceImpl implements HospitalService {
             // 简化：用 core_departments 字段包含判断
             wrapper.like("core_departments", departmentId);
         }
-        if ("level".equals(sort)) {
+        
+        // 按距离排序时，使用 SQL 计算距离
+        if ("distance".equals(sort) && lat != null && lng != null) {
+            // 使用 Haversine 公式计算距离（单位：公里）
+            // 地球半径：6371 km
+            wrapper.select("id", "name", "level", "rating", "address", "lat", "lng", 
+                          "phone", "core_departments", "has_open_slots", "description",
+                          "created_at", "updated_at",
+                          "(6371 * acos(cos(radians(" + lat + ")) * cos(radians(lat)) * " +
+                          "cos(radians(lng) - radians(" + lng + ")) + sin(radians(" + lat + ")) * " +
+                          "sin(radians(lat)))) AS distance");
+            wrapper.orderByAsc("distance");
+        } else if ("level".equals(sort)) {
             wrapper.orderByDesc("level");
         } else if ("rating".equals(sort)) {
             wrapper.orderByDesc("rating");
@@ -34,6 +46,7 @@ public class HospitalServiceImpl implements HospitalService {
         } else {
             wrapper.orderByAsc("id"); // 默认
         }
+        
         Page<Hospital> p = new Page<>(page, size);
         return hospitalMapper.selectPage(p, wrapper);
     }

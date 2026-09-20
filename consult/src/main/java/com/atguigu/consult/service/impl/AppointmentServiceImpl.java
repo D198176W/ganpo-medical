@@ -16,7 +16,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     public Appointment getOne(Appointment appointment){
         LambdaQueryWrapper<Appointment> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Appointment::getUsername,appointment.getUsername());
-        queryWrapper.eq(Appointment::getIdCard,appointment.getUsername());
+        queryWrapper.eq(Appointment::getIdCard,appointment.getIdCard());
         queryWrapper.eq(Appointment::getDepartment,appointment.getDepartment());
         queryWrapper.eq(Appointment::getDate,appointment.getDate());
         queryWrapper.eq(Appointment::getTime,appointment.getTime());
@@ -25,6 +25,18 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
         return appointmentDB;
 
 
+    }
+
+    @Override
+    public long countOccupiedSlots(String department, String date, String time, String doctorName) {
+        LambdaQueryWrapper<Appointment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Appointment::getDepartment, department);
+        queryWrapper.eq(Appointment::getDate, date);
+        queryWrapper.eq(Appointment::getTime, time);
+        if (doctorName != null && !doctorName.isBlank()) {
+            queryWrapper.eq(Appointment::getDoctorName, doctorName);
+        }
+        return baseMapper.selectCount(queryWrapper);
     }
 
 }

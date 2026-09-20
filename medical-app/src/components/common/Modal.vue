@@ -21,7 +21,9 @@
         </button>
       </div>
       <div class="p-5">
-        <slot name="body"></slot>
+        <slot name="body">
+          <slot></slot>
+        </slot>
       </div>
       <div v-if="$slots.footer" class="sticky bottom-0 bg-white z-10 p-5 border-t">
         <slot name="footer"></slot>

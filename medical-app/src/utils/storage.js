@@ -3,7 +3,53 @@
 /**
  * 本地存储工具类
  * 提供对 localStorage 的封装，支持数据类型自动转换和错误处理
+ * 当 localStorage 不可用时，自动降级到内存存储
  */
+
+// 内存存储（当 localStorage 不可用时使用）
+const memoryStorage = {
+  _data: {},
+  setItem(key, value) {
+    this._data[key] = String(value)
+  },
+  getItem(key) {
+    return this._data.hasOwnProperty(key) ? this._data[key] : null
+  },
+  removeItem(key) {
+    delete this._data[key]
+  },
+  clear() {
+    this._data = {}
+  },
+  key(index) {
+    const keys = Object.keys(this._data)
+    return keys[index] || null
+  },
+  get length() {
+    return Object.keys(this._data).length
+  }
+}
+
+// 检测 localStorage 是否可用
+function isLocalStorageAvailable() {
+  try {
+    const testKey = '__storage_test__'
+    localStorage.setItem(testKey, testKey)
+    localStorage.removeItem(testKey)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+// 选择存储方式
+const storageImpl = isLocalStorageAvailable() ? localStorage : memoryStorage
+const usingMemoryStorage = !isLocalStorageAvailable()
+
+if (usingMemoryStorage) {
+  console.warn('localStorage 不可用，已降级到内存存储（数据在页面刷新后会丢失）')
+}
+
 const storage = {
   /**
    * 获取存储项
@@ -13,7 +59,7 @@ const storage = {
    */
   get(key, defaultValue = null) {
     try {
-      const item = localStorage.getItem(key)
+      const item = storageImpl.getItem(key)
       if (item === null) {
         return defaultValue
       }
@@ -26,7 +72,7 @@ const storage = {
         return item
       }
     } catch (error) {
-      console.error(`获取存储项失败 [${key}]:`, error)
+      // 静默处理错误，避免控制台报错
       return defaultValue
     }
   },
@@ -46,10 +92,10 @@ const storage = {
       }
 
       const serializedValue = JSON.stringify(value)
-      localStorage.setItem(key, serializedValue)
+      storageImpl.setItem(key, serializedValue)
       return true
     } catch (error) {
-      console.error(`设置存储项失败 [${key}]:`, error)
+      // 静默处理错误
       return false
     }
   },
@@ -61,10 +107,9 @@ const storage = {
    */
   remove(key) {
     try {
-      localStorage.removeItem(key)
+      storageImpl.removeItem(key)
       return true
     } catch (error) {
-      console.error(`删除存储项失败 [${key}]:`, error)
       return false
     }
   },
@@ -75,10 +120,9 @@ const storage = {
    */
   clear() {
     try {
-      localStorage.clear()
+      storageImpl.clear()
       return true
     } catch (error) {
-      console.error('清空存储失败:', error)
       return false
     }
   },
@@ -90,9 +134,8 @@ const storage = {
    */
   has(key) {
     try {
-      return localStorage.getItem(key) !== null
+      return storageImpl.getItem(key) !== null
     } catch (error) {
-      console.error(`检查存储项失败 [${key}]:`, error)
       return false
     }
   },
@@ -103,9 +146,11 @@ const storage = {
    */
   keys() {
     try {
+      if (storageImpl === memoryStorage) {
+        return Object.keys(memoryStorage._data)
+      }
       return Object.keys(localStorage)
     } catch (error) {
-      console.error('获取存储键名失败:', error)
       return []
     }
   },
@@ -219,12 +264,21 @@ const storage = {
    * @returns {Function} 取消监听函数
    */
   watch(callback) {
+    const parseStorageValue = (raw) => {
+      if (!raw) return null
+      try {
+        return JSON.parse(raw)
+      } catch {
+        return raw
+      }
+    }
+
     const handler = (event) => {
       if (event.storageArea === localStorage) {
         callback({
           key: event.key,
-          oldValue: event.oldValue ? JSON.parse(event.oldValue) : null,
-          newValue: event.newValue ? JSON.parse(event.newValue) : null,
+          oldValue: parseStorageValue(event.oldValue),
+          newValue: parseStorageValue(event.newValue),
           url: event.url,
           storageArea: event.storageArea
         })
