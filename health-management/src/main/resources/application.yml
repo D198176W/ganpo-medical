@@ -1,4 +1,4 @@
-# ????
+# 健康管理服务配置
 server:
   port: 8081
   servlet:
@@ -8,7 +8,6 @@ server:
       max: 200
       min-spare: 10
 
-# Spring??
 spring:
   application:
     name: health-management
@@ -16,13 +15,9 @@ spring:
     active: dev
 
   datasource:
-    url: jdbc:mysql://192.168.88.132:3306/health_management?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
-    username: root
-<<<<<<< HEAD
-    password:
-=======
-    password: Cmab-19817
->>>>>>> 9b1bb41fd6d89941f901e638a4766caca9f2260d
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/health_management?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -31,27 +26,22 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
 
-      # JPA/Hibernate??
-  jpa:
-     hibernate:
-        ddl-auto: update
-     show-sql: true
-     properties:
-          hibernate:
-            dialect: org.hibernate.dialect.MySQL8Dialect
-            format_sql: true
-
-
-
-
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  data:
-    redis:
-      host: 192.168.88.132
 
-# MyBatis Plus??
+  # 文件上传与静态资源配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/public/,file:./uploads/
+  mvc:
+    static-path-pattern: /static/**
+
+# MyBatis-Plus 配置
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -65,15 +55,12 @@ mybatis-plus:
       insert-strategy: always
       update-strategy: always
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.atguigu.healthmanagement.entity
+  type-aliases-package: com.ganpo.healthmanagement.entity
 
 jwt:
-  secret: "HPjmd7aBlGWNSK4W6x6IDhrxe+fG+KZ6xp+6EAgd0cpkmYcnq2tuVxYY+C7ccZ/W
-  2HHDypsKWpiLRHLJ+0OvkaU43lzyFNPUANgewnXyRclGvnAVMqHMVu1sTQV7CpZE
-  AMJcIAfZlwX8bi7GWOk2HEuVMSJAqJS5CULIU86iBhHbgnVf6UaIJn2USXlx7co/
-  mpYRyyWmi5uzWPmfNjjYQjf2ZaH3JokZk2xM04OLLxySqFUZT7lFW+TISS+I5tS5
-  JFdSD2NuyJooMo0FRrTNcpG1dU65OrlEQSWhGscJB+SjHTAu/BadfYwDgo1MdSyC
-  XJDtF05MgJ9mo5AFDGiR7w=="
+  # 注意：JwtConfig 会对该值做 Base64 解码，因此必须是合法 Base64 字符串
+  # 生产环境必须通过环境变量 JWT_SECRET 注入；下面的默认值仅供本地开发，切勿用于线上
+  secret: ${JWT_SECRET:Z2FucG8tbWVkaWNhbC1kZXYtb25seS1qd3Qtc2VjcmV0LWRvLW5vdC11c2UtaW4tcHJvZHVjdGlvbi0wMTIzNDU2Nzg5}
   expiration: 86400000
   header: "Authorization"
   prefix: "Bearer"
@@ -88,76 +75,37 @@ security:
     - /doc.html
     - /favicon.ico
 
-
-
-
-# ????
+# 日志配置
 logging:
   level:
-    com.atguigu.healthmanagement: DEBUG
+    com.ganpo.healthmanagement: DEBUG
     com.baomidou.mybatisplus: INFO
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
   file:
     name: logs/health-management.log
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
-# Swagger???API???
-swagger:
-  enabled: true
-  title: ??????API??
-  description: ???????????????????
-  version: 1.0.0
-  base-package: com.atguigu.healthmanagement.controller
-
-# ????
+# 健康指标目标值
 health:
   management:
-    # ??????
+    # 运动目标
     exercise:
       target-days-per-week: 3
-      target-duration-per-week: 150  # ??
-    # ??????
+      target-duration-per-week: 150  # 分钟
+    # 睡眠目标
     sleep:
       target-hours-per-day: 7
-      early-sleep-time: "22:00"  # ????
-      late-sleep-time: "23:30"   # ????
-    # ????
+      early-sleep-time: "22:00"   # 建议入睡时间
+      late-sleep-time: "23:30"    # 最晚入睡时间
+    # 提醒
     reminder:
       enabled: true
-      check-interval: 300000  # 5????????
+      check-interval: 300000  # 5 分钟检查一次
 
-# ????????????
-mail:
-  host: smtp.163.com
-  port: 465
-  username: health-management@163.com
-  password: your-email-password
-  protocol: smtps
-  properties:
-    mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
-        ssl:
-          enable: true
-
-# ??????
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
-  web:
-    resources:
-      static-locations: classpath:/static/,classpath:/public/,file:./uploads/
-  mvc:
-    static-path-pattern: /static/**
-
-# ???????????
+# Actuator 健康检查
 management:
   endpoints:
     web:
@@ -168,4 +116,11 @@ management:
       show-details: always
       show-components: always
 
-debug: true
+# ---------------------------------------------------------------------------
+# 已移除的无效配置（对应依赖并不存在，属于误导性配置）：
+#   - spring.jpa.*           本模块未引入 JPA 依赖，ddl-auto 不会建表
+#   - spring.data.redis.*    本模块未引入 Redis 依赖
+#   - mail.*                 本模块未引入 spring-boot-starter-mail
+#   - swagger.*              本模块未引入 knife4j / springdoc 依赖
+#   - debug: true            与 logging.level 配置重复，且会输出大量自动配置报告
+# ---------------------------------------------------------------------------

@@ -4,12 +4,13 @@ services:
     image: mysql:8.0
     container_name: pathology_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
       MYSQL_DATABASE: pathology
       MYSQL_USER: pathology
-      MYSQL_PASSWORD: pathologypwd
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pathologypwd}
     ports:
-      - "3306:3306"
+      # 宿主端口使用 3307，与本项目其它环境的数据库端口保持一致
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:

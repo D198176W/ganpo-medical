@@ -1,1 +1,47 @@
-node_modules
+# ============================================================
+# ganpo-medical .gitignore
+# ============================================================
+
+# ---------- Java / Maven ----------
+target/
+*.jar
+*.war
+*.class
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# ---------- 前端 / Node ----------
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- IDE（不应入库，含本机路径与数据库连接信息） ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+settings.json
+
+# ---------- 日志与运行时产物 ----------
+logs/
+*.log
+uploads/
+temp/
+
+# ---------- 环境变量（可能含口令/密钥，禁止入库） ----------
+# 说明：.env / .env.development / .env.production 是前端构建期公开配置，保持入库；
+#       含真实密钥的本地覆盖文件必须忽略。
+.env.local
+.env.*.local
+*.local.env
+
+# ---------- 操作系统 ----------
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -1,46 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.atguigu</groupId>
+  <groupId>com.ganpo</groupId>
   <artifactId>ganpo-medical</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <!--  <packaging>jar</packaging>-->
   <packaging>pom</packaging>
 
   <name>ganpo-medical</name>
-  <url>http://maven.apache.org</url>
-
+  <description>赣鄱医枢 · 区域智能医疗服务平台（父工程，统一版本管理）</description>
 
   <modules>
     <module>consult</module>
     <module>health-management</module>
     <module>pathology</module>
     <module>medical-resource</module>
-
   </modules>
 
-
-
+  <!--
+    版本统一约定（单一来源）：
+    - 所有依赖版本在本 <properties> 中集中声明，子模块只写 groupId + artifactId，不写 <version>
+    - 禁止子模块自行 import spring-boot-dependencies（父工程已 import，重复导入会导致
+      "dependencyManagement ... must be unique" 警告并可能使托管版本失效）
+  -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <java.version>17</java.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+
+    <!-- 框架 / 中间件版本 -->
     <spring-boot.version>3.2.4</spring-boot.version>
     <mybatis-plus.version>3.5.7</mybatis-plus.version>
-    <java.version>17</java.version>
-  </properties>
+    <lombok.version>1.18.30</lombok.version>
+    <jjwt.version>0.11.5</jjwt.version>
+    <knife4j.version>4.3.0</knife4j.version>
+    <langchain4j.version>1.0.0-beta3</langchain4j.version>
+    <bcprov.version>1.79</bcprov.version>
 
+    <!-- 插件版本 -->
+    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
 
-      <!--    <dependency>-->
-      <!--      <groupId>junit</groupId>-->
-      <!--      <artifactId>junit</artifactId>-->
-      <!--      <version>3.8.1</version>-->
-      <!--      <scope>test</scope>-->
-      <!--    </dependency>-->
+      <!-- Spring Boot 依赖清单（只允许在此处 import 一次） -->
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
@@ -49,40 +57,63 @@
         <scope>import</scope>
       </dependency>
 
-      <!-- 公共依赖管理 -->
+      <!-- MyBatis-Plus（Spring Boot 3 专用 starter） -->
       <dependency>
         <groupId>com.baomidou</groupId>
-        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         <version>${mybatis-plus.version}</version>
       </dependency>
 
+      <!-- Lombok：必须显式声明版本，否则 maven-compiler-plugin 的
+           annotationProcessorPaths 会报 "version can neither be null, empty nor blank" -->
       <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>5.0.0</version>
-        <scope>provided</scope>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
 
+      <!-- JWT -->
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.2.6</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+
+      <!-- 密码学 -->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bcprov.version}</version>
+      </dependency>
+
+      <!-- API 文档 -->
+      <dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        <version>${knife4j.version}</version>
       </dependency>
 
     </dependencies>
-
   </dependencyManagement>
 
   <build>
     <pluginManagement>
       <plugins>
-        <!-- Spring Boot Maven Plugin 正确配置 -->
+
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
-          <version>3.2.4</version>  <!-- 使用属性中定义的版本 -->
+          <version>${spring-boot.version}</version>
           <configuration>
             <excludes>
               <exclude>
@@ -91,11 +122,44 @@
               </exclude>
             </excludes>
           </configuration>
+          <!--
+            必须显式绑定 repackage：本工程用 spring-boot-dependencies（BOM import）
+            而非 spring-boot-starter-parent，因此 repackage 不会自动绑定。
+            缺少它时 package 只产出「瘦 jar」（无 Main-Class、无 BOOT-INF/lib），
+            java -jar 会报 "no main manifest attribute"。
+          -->
+          <executions>
+            <execution>
+              <id>repackage</id>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
+
+        <!-- 编译器插件在父工程统一配置，子模块一律继承，不要再单独声明 -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.target}</target>
+            <!-- 保留方法参数名，MyBatis / Spring 参数绑定依赖它 -->
+            <parameters>true</parameters>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+              </path>
+            </annotationProcessorPaths>
+          </configuration>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
-
-
 
 </project>
